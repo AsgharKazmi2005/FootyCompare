@@ -60,8 +60,9 @@
 .player-data {
   display: flex;
   flex-direction: row;
-  width: 50%;
+  width: 100%;
   justify-content: space-evenly;
+  margin-top: 20px;
 }
 
 .graphs {
@@ -89,3 +90,138 @@ label {
   font-size: 20px;
 }
 
+.defender-stats, .defender-title {
+  color: rgb(54, 205, 239);
+}
+
+.forward-stats, .forward-title {
+  color: rgb(252, 109, 109);
+}
+
+.midfielder-stats, .midfielder-title {
+  color: rgb(161, 255, 161);
+}
+
+.goalkeeper-stats, .goalkeeper-title {
+  color: rgb(255, 164, 112);
+}
+
+.general {
+  color: rgb(255, 255, 255);
+}
+
+
+.group {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  margin-bottom: 20px;
+  opacity: 1; /* Start with opacity set to 0 */
+  transition: opacity 0.5s; /* Apply transition for opacity */
+}
+
+.group.visible {
+  opacity: 1; /* When the group is visible, set opacity to 1 */
+}
+
+.stat {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  margin-left: 20px;
+}
+
+p {
+  margin: 0;
+}
+
+.buttons-players {
+display: flex;
+flex-direction: column;
+width: 50%;
+align-items: center;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  border: 1px solid white;
+  padding: 10px;
+  width: 91%;
+  border-radius: 10px;
+}
+
+.button {
+  padding: 10px 20px;
+  margin-right: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color .7s, color .7s; /* Add transition property */
+
+}
+
+.general.active {
+  background-color: #ffffff; /* White background */
+  color: #000000; /* Black text */
+}
+
+.general {
+  background-color: #000000; /* Black background */
+  color: #ffffff; /* White text */
+  border: 1px solid white;
+}
+
+.defender {
+  background-color: #ffffff; /* White background */
+  color:rgb(54, 205, 239);
+}
+
+.defender.active {
+  background-color: rgb(54, 205, 239); /* Blue background */
+  color: #ffffff; /* White text */
+}
+
+.forward {
+  background-color: #ffffff; /* White background */
+  color: rgb(252, 109, 109); /* Red text */
+}
+
+.forward.active {
+  background-color: rgb(252, 109, 109);/* Red background */
+  color: #ffffff; /* White text */
+}
+
+.midfielder {
+  background-color: #ffffff; /* White background */
+  color: rgb(100, 165, 100); /* Green text */
+}
+
+.midfielder.active {
+  background-color: rgb(161, 255, 161); /* Green background */
+  color: #000000; /* White text */
+}
+
+.goalkeeper {
+  background-color: #ffffff; /* White background */
+  color: rgb(255, 164, 112); /* Orange text */
+}
+
+.goalkeeper.active {
+  background-color: rgb(255, 164, 112); /* Orange background */
+  color: #ffffff; /* White text */
+}
+
+.player-data {
+  opacity: 1;
+  transition: opacity 1s, height 0.5s, padding 0.5s, margin 0.5s;
+}
+
+.player-data.hidden {
+  opacity: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+}

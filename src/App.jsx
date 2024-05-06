@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -6,6 +6,134 @@ function App() {
   const [player2, setPlayer2] = useState("");
   const [player1Data, setPlayer1Data] = useState(null);
   const [player2Data, setPlayer2Data] = useState(null);
+  const [showGeneral, setShowGeneral] = useState(true);
+  const [showMidfielder, setShowMidfielder] = useState(false);
+  const [showForward, setShowForward] = useState(false);
+  const [showDefender, setShowDefender] = useState(false);
+  const [showGoalkeeper, setShowGoalkeeper] = useState(false);
+
+  useEffect(() => {
+    if (player1Data && player2Data) {
+      const position1 = getPosition(player1Data);
+      const position2 = getPosition(player2Data);
+      
+      setShowGeneral(true);
+      setShowMidfielder(position1 === "Midfielder" || position2 === "Midfielder");
+      setShowForward(position1 === "Forward" || position2 === "Forward");
+      setShowDefender(position1 === "Defender" || position2 === "Defender");
+      setShowGoalkeeper(position1 === "Goalkeeper" || position2 === "Goalkeeper");
+    }
+  }, [player1Data, player2Data]);
+
+// Rating function for goalkeepers
+const calculateGoalkeeperRating = (data) => {
+  // Define weights for each criterion
+  const weights = {
+    clean_sheets: 0.3,
+    saves: 0.2,
+    goals_conceded: -0.2,
+    penalties_saved: 0.1,
+    yellow_cards: -0.1,
+    red_cards: -0.2
+    // Add more criteria and adjust weights as needed
+  };
+
+  // Calculate the weighted sum of criteria
+  let weightedSum = 0;
+  let totalWeight = 0;
+  for (const key in weights) {
+    if (key in data && data[key] !== undefined) {
+      weightedSum += data[key] * weights[key];
+      totalWeight += weights[key];
+    }
+  }
+
+  // Calculate the rating and round it to two decimal points
+  const rating = weightedSum / totalWeight;
+  return Math.round(rating * 100) / 100;
+};
+
+// Rating function for defenders
+const calculateDefenderRating = (data) => {
+  // Define weights for each criterion
+  const weights = {
+    clean_sheets: 0.2,
+    goals_conceded: -0.3,
+    assists: 0.2,
+    yellow_cards: -0.1,
+    red_cards: -0.2
+    // Add more criteria and adjust weights as needed
+  };
+
+  // Calculate the weighted sum of criteria
+  let weightedSum = 0;
+  let totalWeight = 0;
+  for (const key in weights) {
+    if (key in data && data[key] !== undefined) {
+      weightedSum += data[key] * weights[key];
+      totalWeight += weights[key];
+    }
+  }
+
+  // Calculate the rating and round it to two decimal points
+  const rating = weightedSum / totalWeight;
+  return Math.round(rating * 100) / 100;
+};
+
+// Rating function for midfielders
+const calculateMidfielderRating = (data) => {
+  // Define weights for each criterion
+  const weights = {
+    assists: 0.3,
+    goals_scored: 0.3,
+    clean_sheets: 0.1,
+    yellow_cards: -0.1,
+    red_cards: -0.2
+    // Add more criteria and adjust weights as needed
+  };
+
+  // Calculate the weighted sum of criteria
+  let weightedSum = 0;
+  let totalWeight = 0;
+  for (const key in weights) {
+    if (key in data && data[key] !== undefined) {
+      weightedSum += data[key] * weights[key];
+      totalWeight += weights[key];
+    }
+  }
+
+  // Calculate the rating and round it to two decimal points
+  const rating = weightedSum / totalWeight;
+  return Math.round(rating * 100) / 100;
+};
+
+// Rating function for forwards
+const calculateForwardRating = (data) => {
+  // Define weights for each criterion
+  const weights = {
+    goals_scored: 0.4,
+    assists: 0.2,
+    clean_sheets: 0.1,
+    yellow_cards: -0.1,
+    red_cards: -0.2
+    // Add more criteria and adjust weights as needed
+  };
+
+  // Calculate the weighted sum of criteria
+  let weightedSum = 0;
+  let totalWeight = 0;
+  for (const key in weights) {
+    if (key in data && data[key] !== undefined) {
+      weightedSum += data[key] * weights[key];
+      totalWeight += weights[key];
+    }
+  }
+
+  // Calculate the rating and round it to two decimal points
+  const rating = weightedSum / totalWeight;
+  return Math.round(rating * 100) / 100;
+};
+
 
   const handlePlayer1Change = async (event) => {
     const playerName = event.target.value;
@@ -79,6 +207,81 @@ function App() {
     }
   };
 
+  const toggleShowGeneral = () => {
+    setShowGeneral(!showGeneral);
+  };
+
+  const toggleShowMidfielder = () => {
+    setShowMidfielder(!showMidfielder);
+  };
+
+  const toggleShowForward = () => {
+    setShowForward(!showForward);
+  };
+
+  const toggleShowDefender = () => {
+    setShowDefender(!showDefender);
+  };
+
+  const toggleShowGoalkeeper = () => {
+    setShowGoalkeeper(!showGoalkeeper);
+  };
+
+  const defenderStatsOrder = [
+    'clean_sheets',
+    'goals_conceded',
+    'expected_goals_conceded',
+    'own_goals',
+    'clean_sheets_per_90',
+    'expected_goals_conceded_per_90',
+    'goals_conceded_per_90'
+  ];
+
+  const forwardStatsOrder = [
+    'goals_scored',
+    'penalties_missed',
+    'threat',
+    'expected_goals',
+    'expected_goal_involvements',
+    'expected_goals_per_90',
+    'expected_goal_involvements_per_90'
+  ];
+
+  const midfielderStatsOrder = [
+    'assists',
+    'creativity',
+    'expected_assists',
+    'expected_goal_involvements',
+    'expected_assists_per_90',
+    'expected_goal_involvements_per_90'
+  ];
+
+  const goalkeeperStatsOrder = [
+    'penalties_saved',
+    'saves',
+    'expected_goals_conceded',
+    'saves_per_90',
+    'expected_goals_conceded_per_90',
+    'goals_conceded_per_90',
+    'clean_sheets_per_90'
+  ];
+
+  const calculatePlayerRating = (playerData) => {
+    const position = getPosition(playerData);
+    switch (position) {
+      case "Goalkeeper":
+        return calculateGoalkeeperRating(playerData);
+      case "Defender":
+        return calculateDefenderRating(playerData);
+      case "Midfielder":
+        return calculateMidfielderRating(playerData);
+      case "Forward":
+        return calculateForwardRating(playerData);
+      default:
+        return 0;
+    }
+  };
+
   return (
     <div className="main">
       <div className="navbar">
@@ -106,8 +309,41 @@ function App() {
       </div>
       <hr></hr>
       <div className="main-cont">
-        <div className="player-data">
-          <div className="p1">
+      <div className="buttons-players">
+        <div className="buttons">
+  <button
+    className={showGeneral ? "button general active" : "button general"}
+    onClick={toggleShowGeneral}
+  >
+    General
+  </button>
+  <button
+    className={showMidfielder ? "button midfielder active" : "button midfielder"}
+    onClick={toggleShowMidfielder}
+  >
+    Midfielder
+  </button>
+  <button
+    className={showForward ? "button forward active" : "button forward"}
+    onClick={toggleShowForward}
+  >
+    Forward
+  </button>
+  <button
+    className={showDefender ? "button defender active" : "button defender"}
+    onClick={toggleShowDefender}
+  >
+    Defender
+  </button>
+  <button
+    className={showGoalkeeper ? "button goalkeeper active" : "button goalkeeper"}
+    onClick={toggleShowGoalkeeper}
+  >
+    Goalkeeper
+  </button>
+</div>
+        <div className={`player-data ${showGeneral || showMidfielder || showForward || showDefender || showGoalkeeper ? "" : "hidden"}`}>
+          <div className={`p1 ${showGeneral || showMidfielder || showForward || showDefender || showGoalkeeper ? "" : "hidden"}`}>
             <div className="p1title">
               {player1Data && (
                 <h1 className="player-name">{player1Data.playerName}</h1>
@@ -116,16 +352,70 @@ function App() {
             <hr></hr>
             <div className="data">
               {player1Data && (
-                <p className="position">Position: {getPosition(player1Data)}</p>
+                <>
+                  <p className={`position ${getPosition(player1Data).toLowerCase()}-title`}>Position: {getPosition(player1Data)}</p>
+                  {showGeneral && (
+                    <div className="group general-stats">
+                      {Object.entries(player1Data).map(([key, value]) => (
+                        !(defenderStatsOrder.includes(key) ||
+                          forwardStatsOrder.includes(key) ||
+                          midfielderStatsOrder.includes(key) ||
+                          goalkeeperStatsOrder.includes(key)) && (
+                          <div key={key} className="stat">
+                            <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                            <p className="stat-value">{value}</p>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  )}
+                  {showMidfielder && (
+                    <div className="group midfielder-stats">
+                      {midfielderStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player1Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showForward && (
+                    <div className="group forward-stats">
+                      {forwardStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player1Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showDefender && (
+                    <div className="group defender-stats">
+                      {defenderStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player1Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showGoalkeeper && (
+                    <div className="group goalkeeper-stats">
+                      {goalkeeperStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player1Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {<p>Rating: {calculatePlayerRating(player1Data)}</p>}
+                </>
               )}
-              {player1Data && Object.entries(player1Data).map(([key, value]) => (
-                <p key={key}>
-                  {key.replace(/_/g, " ")}: {value}
-                </p>
-              ))}
             </div>
           </div>
-          <div className="p2">
+          <div className={`p2 ${showGeneral || showMidfielder || showForward || showDefender || showGoalkeeper ? "" : "hidden"}`}>
+
             <div className="p2title">
               {player2Data && (
                 <h1 className="player-name">{player2Data.playerName}</h1>
@@ -134,17 +424,71 @@ function App() {
             <hr></hr>
             <div className="data">
               {player2Data && (
-                <p className="position">Position: {getPosition(player2Data)}</p>
+                <>
+                  <p className={`position ${getPosition(player2Data).toLowerCase()}-title`}>Position: {getPosition(player2Data)}</p>
+                  {showGeneral && (
+                    <div className="group general-stats">
+                      {Object.entries(player2Data).map(([key, value]) => (
+                        !(defenderStatsOrder.includes(key) ||
+                          forwardStatsOrder.includes(key) ||
+                          midfielderStatsOrder.includes(key) ||
+                          goalkeeperStatsOrder.includes(key)) && (
+                          <div key={key} className="stat">
+                            <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                            <p className="stat-value">{value}</p>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  )}
+                  {showMidfielder && (
+                    <div className="group midfielder-stats">
+                      {midfielderStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player2Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showForward && (
+                    <div className="group forward-stats">
+                      {forwardStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player2Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showDefender && (
+                    <div className="group defender-stats">
+                      {defenderStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player2Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {showGoalkeeper && (
+                    <div className="group goalkeeper-stats">
+                      {goalkeeperStatsOrder.map(key => (
+                        <div key={key} className="stat">
+                          <p className="stat-key">{key.replace(/_/g, " ")}:&nbsp;</p>
+                          <p className="stat-value">{player2Data[key]}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {<p>Rating: {calculatePlayerRating(player2Data)}</p>}
+                </>
               )}
-              {player2Data && Object.entries(player2Data).map(([key, value]) => (
-                <p key={key}>
-                  {key.replace(/_/g, " ")}: {value}
-                </p>
-              ))}
             </div>
           </div>
         </div>
-        <div className="graphs"></div>
+      </div>
+      <div className="graphs"></div>
       </div>
     </div>
   );
