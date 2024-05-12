@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import RadarFunc from "./assets/RadarFunc.jsx";
+      // const response = await fetch("https://fantasy.premierleague.com/api/bootstrap-static/");
 
 function App() {
   const [player1, setPlayer1] = useState("");
@@ -73,27 +74,27 @@ function App() {
 
 // Calculate Attacker Stats
 function calculateAttackOverall(stats) {
-  const { goals_scored, penalties_missed, threat, expected_goals, expected_goal_involvements, expected_goals_per_90, expected_goal_involvements_per_90 } = stats;
+  const { goals_scored, penalties_missed, threat, expected_goals, expected_goal_involvements, expected_goals_per_90, expected_goal_involvements_per_90, minutes } = stats;
 
   // Define weights for each statistic
   const weights = {
-      goals_scored: 1,
-      penalties_missed: -0.1,
-      threat: 0.05,
-      expected_goals: 0.2,
-      expected_goal_involvements: 0.2,
-      expected_goals_per_90: 0.1,
-      expected_goal_involvements_per_90: 0.1
+    goals_scored: 1900 / minutes,
+    penalties_missed: 500 / minutes,
+    threat: 100 / minutes,
+    expected_goals: 1500 / minutes,
+    expected_goal_involvements: 25 / minutes,
+    expected_goals_per_90: 25/ minutes,
+    expected_goal_involvements_per_90: 25/ minutes
   };
 
   // Calculate weighted sum
   const weightedSum = (goals_scored * weights.goals_scored) +
-                      (penalties_missed * weights.penalties_missed) +
-                      (threat * weights.threat) +
-                      (expected_goals * weights.expected_goals) +
-                      (expected_goal_involvements * weights.expected_goal_involvements) +
-                      (expected_goals_per_90 * weights.expected_goals_per_90) +
-                      (expected_goal_involvements_per_90 * weights.expected_goal_involvements_per_90);
+    (penalties_missed * weights.penalties_missed) +
+    (threat * weights.threat) +
+    (expected_goals * weights.expected_goals) +
+    (expected_goal_involvements * weights.expected_goal_involvements) +
+    (expected_goals_per_90 * weights.expected_goals_per_90) +
+    (expected_goal_involvements_per_90 * weights.expected_goal_involvements_per_90);
 
   // Normalize the weighted sum to a score from 0 to 100
   const minScore = 0;
@@ -106,27 +107,26 @@ function calculateAttackOverall(stats) {
   return roundedScore;
 }
 
-// Calculate Midfielder Stats
 function calculateMidfielderOverall(stats) {
-  const { assists, creativity, expected_assists, expected_goal_involvements, expected_assists_per_90, expected_goal_involvements_per_90 } = stats;
+  const { assists, creativity, expected_assists, expected_goal_involvements, expected_assists_per_90, expected_goal_involvements_per_90, minutes } = stats;
 
   // Define weights for each statistic
   const weights = {
-      assists: 0.3,
-      creativity: 0.05,
-      expected_assists: 0.2,
-      expected_goal_involvements: 0.2,
-      expected_assists_per_90: 0.1,
-      expected_goal_involvements_per_90: 0.1
+    assists: 1000 / minutes,
+    creativity: 200 / minutes,
+    expected_assists: 1000 / minutes,
+    expected_goal_involvements: 50 / minutes,
+    expected_assists_per_90: 1000 / minutes,
+    expected_goal_involvements_per_90: 50 / minutes
   };
 
   // Calculate weighted sum
   const weightedSum = (assists * weights.assists) +
-                      (creativity * weights.creativity) +
-                      (expected_assists * weights.expected_assists) +
-                      (expected_goal_involvements * weights.expected_goal_involvements) +
-                      (expected_assists_per_90 * weights.expected_assists_per_90) +
-                      (expected_goal_involvements_per_90 * weights.expected_goal_involvements_per_90);
+    (creativity * weights.creativity) +
+    (expected_assists * weights.expected_assists) +
+    (expected_goal_involvements * weights.expected_goal_involvements) +
+    (expected_assists_per_90 * weights.expected_assists_per_90) +
+    (expected_goal_involvements_per_90 * weights.expected_goal_involvements_per_90);
 
   // Normalize the weighted sum to a score from 0 to 100
   const minScore = 0;
@@ -139,43 +139,42 @@ function calculateMidfielderOverall(stats) {
   return roundedScore;
 }
 
-// Calculate Defender Stats
+
 function calculateDefenderOverall(stats, pos) {
-  const { clean_sheets, goals_conceded, expected_goals_conceded, own_goals, clean_sheets_per_90, expected_goals_conceded_per_90, goals_conceded_per_90 } = stats;
-  console.log(stats, pos)
+  const { clean_sheets, goals_conceded, expected_goals_conceded, own_goals, clean_sheets_per_90, expected_goals_conceded_per_90, goals_conceded_per_90, minutes } = stats;
   let weights;
-  if (pos === "Defender" || pos === "Goalkeeper") {
+  if (pos === "Defender") {
     // Define weights for defenders
     weights = {
-      clean_sheets: 10,
-      goals_conceded: -0.1,
-      expected_goals_conceded: -0.05,
-      own_goals: -0.05,
-      clean_sheets_per_90: 15,
-      expected_goals_conceded_per_90: -0.05,
-      goals_conceded_per_90: -0.05
+      clean_sheets: 17000 / minutes,
+      goals_conceded: -100 / minutes,
+      expected_goals_conceded: -50 / minutes,
+      own_goals: -50 / minutes,
+      clean_sheets_per_90: 10000 / minutes,
+      expected_goals_conceded_per_90: -50 / minutes,
+      goals_conceded_per_90: -50 / minutes
     };
   } else {
     // Define default weights for other positions (like attacker or midfielder)
     weights = {
-      clean_sheets: 1,
-      goals_conceded: -0.1,
-      expected_goals_conceded: -0.1,
-      own_goals: -0.1,
-      clean_sheets_per_90: 0.05,
-      expected_goals_conceded_per_90: -0.05,
-      goals_conceded_per_90: -0.05
+      clean_sheets: 0 / minutes,
+      goals_conceded: -0.1 / minutes,
+      expected_goals_conceded: -0.1 / minutes,
+      own_goals: -0.1 / minutes,
+      clean_sheets_per_90: 0 / minutes,
+      expected_goals_conceded_per_90: -0.05 / minutes,
+      goals_conceded_per_90: -0.05 / minutes
     };
   }
 
   // Calculate weighted sum
   const weightedSum = (clean_sheets * weights.clean_sheets) +
-                      (goals_conceded * weights.goals_conceded) +
-                      (expected_goals_conceded * weights.expected_goals_conceded) +
-                      (own_goals * weights.own_goals) +
-                      (clean_sheets_per_90 * weights.clean_sheets_per_90) +
-                      (expected_goals_conceded_per_90 * weights.expected_goals_conceded_per_90) +
-                      (goals_conceded_per_90 * weights.goals_conceded_per_90);
+    (goals_conceded * weights.goals_conceded) +
+    (expected_goals_conceded * weights.expected_goals_conceded) +
+    (own_goals * weights.own_goals) +
+    (clean_sheets_per_90 * weights.clean_sheets_per_90) +
+    (expected_goals_conceded_per_90 * weights.expected_goals_conceded_per_90) +
+    (goals_conceded_per_90 * weights.goals_conceded_per_90);
 
   // Normalize the weighted sum to a score from 0 to 100
   const minScore = 0;
@@ -189,31 +188,31 @@ function calculateDefenderOverall(stats, pos) {
 }
 
 // Calculate Goalkeeper Stats
-// Calculate Goalkeeper Stats
 function calculateGoalkeeperOverall(stats, pos) {
   const { penalties_saved, saves, expected_goals_conceded, saves_per_90, expected_goals_conceded_per_90, goals_conceded_per_90, clean_sheets_per_90 } = stats;
-
+  const minutes=stats.minutes
   // Define default weights for non-goalkeeper positions
   const defaultWeights = {
-    penalties_saved: 0.2,
-    saves: 0.3,
-    expected_goals_conceded: -0.3,
-    saves_per_90: 0.1,
-    expected_goals_conceded_per_90: -0.1,
-    goals_conceded_per_90: -0.1,
-    clean_sheets_per_90: 0.1
+    penalties_saved: 10 / minutes,
+    saves: 10 / minutes,
+    expected_goals_conceded: -30 / minutes,
+    saves_per_90: 10/ minutes,
+    expected_goals_conceded_per_90: -30 / minutes,
+    goals_conceded_per_90: -0.1 / minutes,
+    clean_sheets_per_90: 100000 / minutes
   };
 
   // Define weights for goalkeeper position
   const goalkeeperWeights = {
-    penalties_saved: 1,
-    saves:2,
-    expected_goals_conceded: -0.3,
-    saves_per_90: 1,
-    expected_goals_conceded_per_90: -0.1,
-    goals_conceded_per_90: -0.1,
-    clean_sheets_per_90: 1 // Adjusted weight for clean sheets
+    penalties_saved: 50 / minutes,
+    saves: 2500 / minutes,
+    expected_goals_conceded: -1 / minutes,
+    saves_per_90: 200 / minutes,
+    expected_goals_conceded_per_90: -0.1 / minutes,
+    goals_conceded_per_90: -0.1 / minutes,
+    clean_sheets_per_90: 200 / minutes // Adjusted weight for clean sheets
   };
+
 
   // Select weights based on position
   const weights = pos === "Goalkeeper" ? goalkeeperWeights : defaultWeights;
@@ -239,16 +238,14 @@ function calculateGoalkeeperOverall(stats, pos) {
 }
 
 ////////////////////////////////////////////////////////////////////
-// Rating function for goalkeepers
+// Calculate Goalkeeper Rating
 const calculateGoalkeeperRating = (data) => {
   // Define weights for each criterion
   const weights = {
-    clean_sheets: 0.3,
-    saves: 0.2,
-    goals_conceded: -0.2,
-    penalties_saved: 0.1,
-    yellow_cards: -0.1,
-    red_cards: -0.2
+    AttackerRating: 0,
+    MidfielderRating: 0.1,
+    DefenderRating: 0.1,
+    GoalkeeperRating: 2.5
     // Add more criteria and adjust weights as needed
   };
 
@@ -256,7 +253,7 @@ const calculateGoalkeeperRating = (data) => {
   let weightedSum = 0;
   let totalWeight = 0;
   for (const key in weights) {
-    if (key in data && data[key] !== undefined) {
+    if (key in data) {
       weightedSum += data[key] * weights[key];
       totalWeight += weights[key];
     }
@@ -267,42 +264,14 @@ const calculateGoalkeeperRating = (data) => {
   return Math.round(rating * 100) / 100;
 };
 
-// Rating function for defenders
-const calculateDefenderRating = (data) => {
-  // Define weights for each criterion
-  const weights = {
-    clean_sheets: 0.2,
-    goals_conceded: -0.3,
-    assists: 0.2,
-    yellow_cards: -0.1,
-    red_cards: -0.2
-    // Add more criteria and adjust weights as needed
-  };
-
-  // Calculate the weighted sum of criteria
-  let weightedSum = 0;
-  let totalWeight = 0;
-  for (const key in weights) {
-    if (key in data && data[key] !== undefined) {
-      weightedSum += data[key] * weights[key];
-      totalWeight += weights[key];
-    }
-  }
-
-  // Calculate the rating and round it to two decimal points
-  const rating = weightedSum / totalWeight;
-  return Math.round(rating * 100) / 100;
-};
-
-// Rating function for midfielders
+// Calculate Goalkeeper Rating
 const calculateMidfielderRating = (data) => {
   // Define weights for each criterion
   const weights = {
-    assists: 0.3,
-    goals_scored: 0.3,
-    clean_sheets: 0.1,
-    yellow_cards: -0.1,
-    red_cards: -0.2
+    AttackerRating: 0.25,
+    MidfielderRating: 5,
+    DefenderRating: 0.15,
+    GoalkeeperRating: 0
     // Add more criteria and adjust weights as needed
   };
 
@@ -310,7 +279,7 @@ const calculateMidfielderRating = (data) => {
   let weightedSum = 0;
   let totalWeight = 0;
   for (const key in weights) {
-    if (key in data && data[key] !== undefined) {
+    if (key in data) {
       weightedSum += data[key] * weights[key];
       totalWeight += weights[key];
     }
@@ -321,15 +290,40 @@ const calculateMidfielderRating = (data) => {
   return Math.round(rating * 100) / 100;
 };
 
-// Rating function for forwards
+// Calculate Goalkeeper Rating
+const calculateDefenderRating = (data) => {
+  // Define weights for each criterion
+  const weights = {
+    AttackerRating: .01,
+    MidfielderRating: .01,
+    DefenderRating: 4,
+    GoalkeeperRating: .01
+    // Add more criteria and adjust weights as needed
+  };
+
+  // Calculate the weighted sum of criteria
+  let weightedSum = 0;
+  let totalWeight = 0;
+  for (const key in weights) {
+    if (key in data) {
+      weightedSum += data[key] * weights[key];
+      totalWeight += weights[key];
+    }
+  }
+
+  // Calculate the rating and round it to two decimal points
+  const rating = weightedSum / totalWeight;
+  return Math.round(rating * 100) / 100;
+};
+
+// Calculate Goalkeeper Rating
 const calculateForwardRating = (data) => {
   // Define weights for each criterion
   const weights = {
-    goals_scored: 0.4,
-    assists: 0.2,
-    clean_sheets: 0.1,
-    yellow_cards: -0.1,
-    red_cards: -0.2
+    AttackerRating: 5,
+    MidfielderRating: 0.1,
+    DefenderRating: 0.01,
+    GoalkeeperRating: 0
     // Add more criteria and adjust weights as needed
   };
 
@@ -337,7 +331,7 @@ const calculateForwardRating = (data) => {
   let weightedSum = 0;
   let totalWeight = 0;
   for (const key in weights) {
-    if (key in data && data[key] !== undefined) {
+    if (key in data) {
       weightedSum += data[key] * weights[key];
       totalWeight += weights[key];
     }
@@ -347,7 +341,6 @@ const calculateForwardRating = (data) => {
   const rating = weightedSum / totalWeight;
   return Math.round(rating * 100) / 100;
 };
-
 
   const handlePlayer1Change = async (event) => {
     const playerName = event.target.value;
@@ -361,9 +354,10 @@ const calculateForwardRating = (data) => {
     await fetchPlayerData(playerName, setPlayer2Data);
   };
 
+
   const fetchPlayerData = async (playerName, setData) => {
     try {
-      const response = await fetch("https://fantasy.premierleague.com/api/bootstrap-static/");
+      const response = await fetch("http://localhost:8080/data");
       const data = await response.json();
       const player = data.elements.find((element) => element.web_name.toLowerCase() === playerName.toLowerCase());
       if (player) {
@@ -417,9 +411,9 @@ const calculateForwardRating = (data) => {
   const getPosition = (playerData) => { 
     if (playerData.saves) {
       return "Goalkeeper";
-    } else if (playerData.expected_goal_involvements_per_90 > 0.5) {
+    } else if (playerData.AttackerRating>=playerData.MidfielderRating && playerData.AttackerRating>=playerData.DefenderRating) {
       return "Forward";
-    } else if (playerData.expected_goal_involvements_per_90 > 0.25) {
+    } else if (playerData.MidfielderRating >= playerData.DefenderRating) {
       return "Midfielder";
     } else {
       return "Defender";
