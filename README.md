@@ -2,4 +2,4 @@ FootyCompare Utilizes Java, React.js, and React libraries to allow any manager t
 
 Video Demo:
 
-![](https://github.com/AsgharKazmi2005/FootyCompare/blob/main/Demo.mp4)
+![](https://github.com/AsgharKazmi2005/FootyCompare/blob/main/FootyDemo.mp4)
